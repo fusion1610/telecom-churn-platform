@@ -12,6 +12,7 @@ venv/
 
 # Data
 data/raw/telecom_churn.csv
+data/raw/telecom_churn.zip
 data/interim/
 data/processed/
 
