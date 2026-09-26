@@ -11,6 +11,7 @@ venv/
 .env
 
 # Data
+data/raw/telecom_churn.csv
 data/interim/
 data/processed/
 
