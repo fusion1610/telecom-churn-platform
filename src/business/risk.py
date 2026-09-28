@@ -70,3 +70,33 @@ def build_risk_table(
     )
 
     return result
+
+def assign_risk_band(churn_probability):
+    """Assign descriptive risk bands to churn probabilities."""
+    probability = pd.Series(churn_probability).copy()
+
+    if probability.isna().any():
+        raise ValueError(
+            "churn_probability cannot contain missing values."
+        )
+
+    if ((probability < 0) | (probability > 1)).any():
+        raise ValueError(
+            "churn_probability must be between 0 and 1."
+        )
+
+    return pd.Series(
+        np.select(
+            [
+                probability < 0.05,
+                probability < 0.07,
+            ],
+            [
+                "Low",
+                "Moderate",
+            ],
+            default="High",
+        ),
+        index=probability.index,
+        name="Risk Band",
+    )
