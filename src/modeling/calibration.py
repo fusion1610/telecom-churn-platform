@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from sklearn.calibration import calibration_curve
+from sklearn.calibration import CalibratedClassifierCV, calibration_curve
 from sklearn.metrics import brier_score_loss
 
 
@@ -41,4 +41,21 @@ def create_calibration_table(
             "Mean Predicted Probability": result["mean_predicted_value"],
             "Observed Churn Rate": result["fraction_positive"],
         }
+    )
+
+
+def build_calibrated_model(
+    estimator,
+    method: str,
+    cv: int = 5,
+) -> CalibratedClassifierCV:
+    if method not in {"sigmoid", "isotonic"}:
+        raise ValueError(
+            "method must be either 'sigmoid' or 'isotonic'."
+        )
+
+    return CalibratedClassifierCV(
+        estimator=estimator,
+        method=method,
+        cv=cv,
     )
