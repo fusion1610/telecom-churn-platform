@@ -143,3 +143,47 @@ It should not be interpreted as confirmed future revenue loss or revenue that ca
 The dataset does not establish the time period represented by TotalRevenue.
 
 Revenue-at-risk observations have been ranked and segmented into percentile-based operational priority tiers.
+
+## Retention Action Matrix
+
+The retention action matrix converts model risk and revenue-priority information into an operational decision-support framework.
+
+### Action Matrix
+
+| Risk Band | Priority Tier | Operational Action | Urgency |
+|---|---|---|---|
+| Low | Standard | Normal lifecycle management | Low |
+| Low | Priority | Monitor customer and review revenue exposure | Medium |
+| Low | Critical | Revenue-focused review despite low predicted churn | Medium |
+| Moderate | Standard | Add to monitoring workflow | Medium |
+| Moderate | Priority | Proactive retention review | High |
+| Moderate | Critical | Prioritized retention review | High |
+| High | Standard | Targeted retention review | High |
+| High | Priority | Proactive retention intervention | Very High |
+| High | Critical | Highest-priority retention review | Very High |
+
+### Held-Out Test Application
+
+The matrix was applied to the observation-level risk table generated from the held-out test predictions.
+
+The highest revenue-at-risk observations were classified as High risk and Critical priority, resulting in a Very High retention urgency and a Highest-priority retention review action.
+
+For example, the highest-ranked observation had:
+
+- Churn Probability: 11.03%
+- Risk Band: High
+- Total Revenue: 94.83
+- Revenue at Risk: 10.46
+- Priority Tier: Critical
+- Retention Action: Highest-priority retention review
+- Retention Urgency: Very High
+
+### Decision-Support Caveat
+
+The retention action matrix is an operational decision-support framework. The dataset contains churn outcomes but does not contain historical retention interventions or treatment outcomes.
+
+Therefore, the project does not establish that a particular retention intervention will reduce churn.
+
+The `CHURN` field is used only as a historical outcome for model evaluation. It is not used to generate the retention action for an observation.
+
+Risk bands, revenue-at-risk priority tiers, retention actions, and urgency levels have been integrated into an observation-level retention decision-support framework.

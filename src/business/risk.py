@@ -133,3 +133,65 @@ def assign_priority_tier(
         index=revenue.index,
         name="Priority Tier",
     )
+
+def assign_retention_action(risk_band, priority_tier):
+    risk = pd.Series(risk_band)
+    priority = pd.Series(priority_tier)
+
+    if len(risk) != len(priority):
+        raise ValueError(
+            "risk_band and priority_tier must have the same length."
+        )
+
+    action_map = {
+        ("Low", "Standard"): "Normal lifecycle management",
+        ("Low", "Priority"): "Monitor customer and review revenue exposure",
+        ("Low", "Critical"): "Revenue-focused review despite low predicted churn",
+        ("Moderate", "Standard"): "Add to monitoring workflow",
+        ("Moderate", "Priority"): "Proactive retention review",
+        ("Moderate", "Critical"): "Prioritized retention review",
+        ("High", "Standard"): "Targeted retention review",
+        ("High", "Priority"): "Proactive retention intervention",
+        ("High", "Critical"): "Highest-priority retention review",
+    }
+
+    result = pd.Series(
+        [
+            action_map.get((r, p), "Review required")
+            for r, p in zip(risk, priority)
+        ],
+        index=risk.index,
+        name="Retention Action",
+    )
+
+    return result
+
+def assign_retention_urgency(risk_band, priority_tier):
+    risk = pd.Series(risk_band)
+    priority = pd.Series(priority_tier)
+
+    if len(risk) != len(priority):
+        raise ValueError(
+            "risk_band and priority_tier must have the same length."
+        )
+
+    urgency_map = {
+        ("Low", "Standard"): "Low",
+        ("Low", "Priority"): "Medium",
+        ("Low", "Critical"): "Medium",
+        ("Moderate", "Standard"): "Medium",
+        ("Moderate", "Priority"): "High",
+        ("Moderate", "Critical"): "High",
+        ("High", "Standard"): "High",
+        ("High", "Priority"): "Very High",
+        ("High", "Critical"): "Very High",
+    }
+
+    return pd.Series(
+        [
+            urgency_map.get((r, p), "Review")
+            for r, p in zip(risk, priority)
+        ],
+        index=risk.index,
+        name="Retention Urgency",
+    )
