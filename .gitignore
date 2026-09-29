@@ -30,3 +30,7 @@ Thumbs.db
 .idea/
 
 DevelopmentRoadmap.md
+
+# MLflow
+mlflow.db
+mlflow.db-*
