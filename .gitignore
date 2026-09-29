@@ -18,7 +18,6 @@ data/processed/
 
 # ML artifacts
 mlruns/
-models/
 artifacts/
 
 # OS
