@@ -62,3 +62,10 @@ def test_predict_rejects_negative_subscribers():
         response = client.post("/predictions/churn", json=payload)
 
     assert response.status_code == 422
+
+def test_health_endpoint():
+    with TestClient(app) as client:
+        response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "healthy"}
