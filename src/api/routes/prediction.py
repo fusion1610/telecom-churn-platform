@@ -17,6 +17,11 @@ router = APIRouter(
 @router.post(
     "/churn",
     response_model=ChurnPredictionResponse,
+    summary="Predict customer churn risk",
+    description=(
+        "Predicts churn probability for a prepared B2B telecom customer "
+        "and optionally calculates revenue-at-risk and retention priority."
+    ),
 )
 def predict_churn(
     payload: ChurnPredictionRequest,
