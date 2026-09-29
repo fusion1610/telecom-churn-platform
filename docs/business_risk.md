@@ -1,189 +1,46 @@
-# Business Risk & Revenue Layer
+# Business Risk & Revenue Prioritization
 
-## Checkpoint 41 — Observation-Level Risk & Revenue
+## Overview
 
-The final calibrated HistGradientBoosting model produces a churn
-probability for each held-out test observation.
+The business-risk layer converts model churn probabilities into operational
+risk and revenue-exposure signals for retention prioritization.
 
-An observation-level revenue-at-risk proxy is calculated as:
+The business layer is applied after the final calibrated churn model produces
+customer-level churn probabilities.
 
-Revenue at Risk = Churn Probability × TotalRevenue
+The primary outputs are:
 
-The operating threshold selected from out-of-fold training predictions
-is 0.07.
+- Churn Probability
+- Revenue at Risk
+- Retention Flag
+- Risk Band
+- Priority Tier
+- Retention Action
+- Retention Urgency
 
-### Held-out test results
-
-- Test observations: 1,691
-- Retention-flagged observations: 431
-- Flagged coverage: 25.49%
-- Total observed revenue: 116,713.13
-- Total modeled revenue at risk: 7,599.40
-- Revenue in flagged observations: 29,914.84
-- Modeled revenue at risk in flagged observations: 2,356.27
-
-The thresholded observations therefore contain approximately 31.0% of
-the total modeled revenue-at-risk.
-
-Revenue at Risk is an expected-exposure proxy, not realized revenue
-loss or revenue saved.
-
-The available dataset does not establish the time period represented
-by TotalRevenue. Therefore, the metric is not labeled as monthly
-revenue, annual revenue, ARR, or another time-specific financial
-measure.
-
-The current output is intentionally observation-level because PID was
-previously found not to be a guaranteed unique identifier. Customer-
-level aggregation requires an explicit policy for repeated PID
-observations.
-
-## Risk Bands & Operating Segments
-
-Risk bands were introduced to convert continuous churn probabilities into operational customer segments.
-
-### Risk Band Definitions
-
-| Risk Band | Churn Probability |
-|---|---:|
-| Low | < 0.05 |
-| Moderate | 0.05–<0.07 |
-| High | >= 0.07 |
-
-The 0.07 boundary corresponds to the frozen retention operating threshold selected using out-of-fold training predictions. The 0.05 boundary is a descriptive segmentation boundary and was not separately optimized.
-
-### Held-Out Test Results
-
-| Risk Band | Observations | Mean Churn Probability | Observed Churn Rate | Revenue at Risk | Revenue-at-Risk Share | Coverage |
-|---|---:|---:|---:|---:|---:|---:|
-| Low | 102 | 4.71% | 2.94% | 321.92 | 4.24% | 6.03% |
-| Moderate | 1,158 | 6.15% | 4.75% | 4,921.21 | 64.76% | 68.48% |
-| High | 431 | 7.88% | 3.25% | 2,356.27 | 31.01% | 25.49% |
-
-### Interpretation
-
-The risk bands provide an operational segmentation of the model's predicted churn probability.
-
-The High-risk band contains 431 observations, representing 25.49% of the held-out test population. Because the frozen operating threshold is 0.07, these 431 observations are the current retention-flagged population.
-
-Although the High-risk band represents 25.49% of observations, it contains 31.01% of the modeled revenue-at-risk. This indicates that the flagged population represents a disproportionately large share of the modeled risk exposure.
-
-The observed churn rates are 2.94% for Low, 4.75% for Moderate, and 3.25% for High. Therefore, the held-out sample does not demonstrate a monotonic relationship between risk band and observed churn rate. This should not be interpreted as strong empirical separation between the bands.
-
-### Business Caveat
-
-Risk bands represent model predictions, not confirmed customer outcomes.
-
-`Revenue at Risk = Churn Probability × TotalRevenue`
-
-The resulting revenue-at-risk measure is an expected-exposure proxy rather than realized revenue loss. The dataset does not establish the revenue time period represented by `TotalRevenue`.
-
-The current risk table is observation-level because `PID` is not a reliable unique identifier in this dataset.
-
-Risk bands and operating segments have been implemented and evaluated on the untouched held-out test set.
-
-## Revenue-at-Risk Prioritization
-
-Revenue-at-risk prioritization extends the churn-risk framework by combining predicted churn probability with observed revenue exposure.
-
-### Prioritization Formula
+### Important terminology
 
 Revenue at Risk is defined as:
 
-`Revenue at Risk = Churn Probability × TotalRevenue`
+Revenue at Risk = Churn Probability × TotalRevenue
 
-Observations were ranked in descending order of Revenue at Risk.
+This represents modeled revenue exposure associated with predicted churn risk.
+It is not realized revenue loss, predicted savings, or revenue that will
+necessarily be lost.
 
-Because the distribution of Revenue at Risk is dataset-specific, percentile-based prioritization was used instead of arbitrary fixed revenue thresholds.
+The dataset does not provide a reliable revenue time period, so TotalRevenue
+is not described as monthly, annual, or lifetime revenue.
 
-### Priority Tier Definitions
+---
 
-| Priority Tier | Revenue-at-Risk Boundary |
-|---|---:|
-| Standard | <= 75th percentile |
-| Priority | > 75th and <= 90th percentile |
-| Critical | > 90th percentile |
+## Observation Lineage
 
-For the held-out test population:
+### Data-lineage issue identified and repaired
 
-| Priority Tier | Observations | Mean Churn Probability | Mean Revenue at Risk | Total Revenue at Risk |
-|---|---:|---:|---:|---:|
-| Standard | 1,268 | 6.22% | 3.907 | 4,954.46 |
-| Priority | 254 | 6.95% | 5.781 | 1,468.39 |
-| Critical | 169 | 8.01% | 6.962 | 1,176.55 |
+The train/test split intentionally resets the pandas index:
 
-### Interpretation
-
-The prioritization tiers show increasing mean churn probability and increasing mean revenue-at-risk from Standard to Critical.
-
-The Critical tier contains 169 observations, approximately 10% of the held-out population, while accounting for approximately 15.48% of total modeled revenue-at-risk.
-
-Priority and Critical observations together contain 423 observations, approximately 25% of the held-out population, and approximately 34.8% of total modeled revenue-at-risk.
-
-The resulting ranking is intended to support retention prioritization. It does not identify customers who will definitely churn and does not represent realized revenue loss.
-
-### Relationship to Risk Bands
-
-Risk Band and Priority Tier represent different concepts:
-
-- Risk Band describes predicted churn probability.
-- Priority Tier describes modeled revenue exposure.
-- Revenue at Risk combines the two through the formula above.
-
-The current prioritization remains observation-level because PID was previously found not to be a reliably unique identifier.
-
-### Business Caveats
-
-Revenue at Risk is an expected-exposure proxy:
-
-`Churn Probability × TotalRevenue`
-
-It should not be interpreted as confirmed future revenue loss or revenue that can necessarily be saved through intervention.
-
-The dataset does not establish the time period represented by TotalRevenue.
-
-Revenue-at-risk observations have been ranked and segmented into percentile-based operational priority tiers.
-
-## Retention Action Matrix
-
-The retention action matrix converts model risk and revenue-priority information into an operational decision-support framework.
-
-### Action Matrix
-
-| Risk Band | Priority Tier | Operational Action | Urgency |
-|---|---|---|---|
-| Low | Standard | Normal lifecycle management | Low |
-| Low | Priority | Monitor customer and review revenue exposure | Medium |
-| Low | Critical | Revenue-focused review despite low predicted churn | Medium |
-| Moderate | Standard | Add to monitoring workflow | Medium |
-| Moderate | Priority | Proactive retention review | High |
-| Moderate | Critical | Prioritized retention review | High |
-| High | Standard | Targeted retention review | High |
-| High | Priority | Proactive retention intervention | Very High |
-| High | Critical | Highest-priority retention review | Very High |
-
-### Held-Out Test Application
-
-The matrix was applied to the observation-level risk table generated from the held-out test predictions.
-
-The highest revenue-at-risk observations were classified as High risk and Critical priority, resulting in a Very High retention urgency and a Highest-priority retention review action.
-
-For example, the highest-ranked observation had:
-
-- Churn Probability: 11.03%
-- Risk Band: High
-- Total Revenue: 94.83
-- Revenue at Risk: 10.46
-- Priority Tier: Critical
-- Retention Action: Highest-priority retention review
-- Retention Urgency: Very High
-
-### Decision-Support Caveat
-
-The retention action matrix is an operational decision-support framework. The dataset contains churn outcomes but does not contain historical retention interventions or treatment outcomes.
-
-Therefore, the project does not establish that a particular retention intervention will reduce churn.
-
-The `CHURN` field is used only as a historical outcome for model evaluation. It is not used to generate the retention action for an observation.
-
-Risk bands, revenue-at-risk priority tiers, retention actions, and urgency levels have been integrated into an observation-level retention decision-support framework.
+```python
+X_train.reset_index(drop=True)
+X_test.reset_index(drop=True)
+y_train.reset_index(drop=True)
+y_test.reset_index(drop=True)
