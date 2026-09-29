@@ -81,3 +81,65 @@ The resulting revenue-at-risk measure is an expected-exposure proxy rather than 
 The current risk table is observation-level because `PID` is not a reliable unique identifier in this dataset.
 
 Risk bands and operating segments have been implemented and evaluated on the untouched held-out test set.
+
+## Revenue-at-Risk Prioritization
+
+Revenue-at-risk prioritization extends the churn-risk framework by combining predicted churn probability with observed revenue exposure.
+
+### Prioritization Formula
+
+Revenue at Risk is defined as:
+
+`Revenue at Risk = Churn Probability × TotalRevenue`
+
+Observations were ranked in descending order of Revenue at Risk.
+
+Because the distribution of Revenue at Risk is dataset-specific, percentile-based prioritization was used instead of arbitrary fixed revenue thresholds.
+
+### Priority Tier Definitions
+
+| Priority Tier | Revenue-at-Risk Boundary |
+|---|---:|
+| Standard | <= 75th percentile |
+| Priority | > 75th and <= 90th percentile |
+| Critical | > 90th percentile |
+
+For the held-out test population:
+
+| Priority Tier | Observations | Mean Churn Probability | Mean Revenue at Risk | Total Revenue at Risk |
+|---|---:|---:|---:|---:|
+| Standard | 1,268 | 6.22% | 3.907 | 4,954.46 |
+| Priority | 254 | 6.95% | 5.781 | 1,468.39 |
+| Critical | 169 | 8.01% | 6.962 | 1,176.55 |
+
+### Interpretation
+
+The prioritization tiers show increasing mean churn probability and increasing mean revenue-at-risk from Standard to Critical.
+
+The Critical tier contains 169 observations, approximately 10% of the held-out population, while accounting for approximately 15.48% of total modeled revenue-at-risk.
+
+Priority and Critical observations together contain 423 observations, approximately 25% of the held-out population, and approximately 34.8% of total modeled revenue-at-risk.
+
+The resulting ranking is intended to support retention prioritization. It does not identify customers who will definitely churn and does not represent realized revenue loss.
+
+### Relationship to Risk Bands
+
+Risk Band and Priority Tier represent different concepts:
+
+- Risk Band describes predicted churn probability.
+- Priority Tier describes modeled revenue exposure.
+- Revenue at Risk combines the two through the formula above.
+
+The current prioritization remains observation-level because PID was previously found not to be a reliably unique identifier.
+
+### Business Caveats
+
+Revenue at Risk is an expected-exposure proxy:
+
+`Churn Probability × TotalRevenue`
+
+It should not be interpreted as confirmed future revenue loss or revenue that can necessarily be saved through intervention.
+
+The dataset does not establish the time period represented by TotalRevenue.
+
+Revenue-at-risk observations have been ranked and segmented into percentile-based operational priority tiers.

@@ -100,3 +100,36 @@ def assign_risk_band(churn_probability):
         index=probability.index,
         name="Risk Band",
     )
+
+def assign_priority_tier(
+    revenue_at_risk,
+    priority_quantiles=(0.75, 0.90),
+):
+    revenue = pd.Series(revenue_at_risk).copy()
+
+    if revenue.isna().any():
+        raise ValueError("revenue_at_risk cannot contain missing values.")
+
+    if (revenue < 0).any():
+        raise ValueError("revenue_at_risk cannot be negative.")
+
+    if len(priority_quantiles) != 2:
+        raise ValueError("priority_quantiles must contain exactly two values.")
+
+    q75, q90 = revenue.quantile(priority_quantiles).to_numpy()
+
+    return pd.Series(
+        np.select(
+            [
+                revenue <= q75,
+                revenue <= q90,
+            ],
+            [
+                "Standard",
+                "Priority",
+            ],
+            default="Critical",
+        ),
+        index=revenue.index,
+        name="Priority Tier",
+    )
