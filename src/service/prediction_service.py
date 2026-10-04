@@ -9,14 +9,12 @@ from src.business.risk import (
     calculate_revenue_at_risk,
 )
 
+from src.config.config import MODEL_THRESHOLD, MODEL_URI
 
 import os
 
-DEFAULT_MODEL_URI = os.getenv(
-    "MODEL_URI",
-    "models:/telecom-churn-hgb@production",
-)
-DEFAULT_THRESHOLD = 0.07
+DEFAULT_MODEL_URI = MODEL_URI
+DEFAULT_THRESHOLD = MODEL_THRESHOLD
 
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
 
