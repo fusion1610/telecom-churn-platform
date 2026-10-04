@@ -78,3 +78,28 @@ def test_target_name_is_preserved():
 
     assert y_train.name == "CHURN"
     assert y_test.name == "CHURN"
+
+def test_split_rejects_wrong_target_name():
+    X, y = make_test_data()
+    y = y.rename("TARGET")
+
+    import pytest
+
+    with pytest.raises(
+        ValueError,
+        match="Expected target named 'CHURN'",
+    ):
+        create_train_test_split(X, y)
+
+
+def test_split_rejects_mismatched_row_counts():
+    X, y = make_test_data()
+    y = y.iloc[:-1]
+
+    import pytest
+
+    with pytest.raises(
+        ValueError,
+        match="Feature and target row counts do not match",
+    ):
+        create_train_test_split(X, y)

@@ -37,3 +37,5 @@ mlflow.db-*
 telecom-churn-dataset-v1.zip
 
 .ci/
+
+.coverage

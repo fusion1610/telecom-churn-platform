@@ -1,0 +1,23 @@
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 80
+omit = [
+    "src/data/categorical_analysis.py",
+    "src/data/dataset_hash.py",
+    "src/data/duplicate_analysis.py",
+    "src/data/duplicate_summary.py",
+    "src/data/feature_relationships.py",
+    "src/data/missing_values.py",
+    "src/data/remaining_missing_analysis.py",
+    "src/data/subscriber_analysis.py",
+    "src/data/target_analysis.py",
+]
+
+exclude_also = [
+    "if __name__ == .__main__.:",
+]

@@ -35,13 +35,14 @@ jobs:
         run: |
           python scripts/create_ci_test_model.py
 
-      - name: Run tests
+      - name: Run tests with coverage
         env:
           PYTHONPATH: ${{ github.workspace }}
           MODEL_URI: ${{ github.workspace }}/.ci/test_model
           MODEL_THRESHOLD: "0.07"
         run: |
-          pytest -q
+          coverage run -m pytest -q
+          coverage report
 
   docker-build:
     runs-on: ubuntu-latest
