@@ -9,33 +9,33 @@ on:
 
 jobs:
   test:
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.14"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements/dev.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/dev.txt
 
-    - name: Download and verify dataset
-      env:
-        DATASET_URL: ${{ vars.DATASET_URL }}
-      run: |
-        python scripts/download_dataset.py
+      - name: Download and verify dataset
+        env:
+          DATASET_URL: ${{ vars.DATASET_URL }}
+        run: |
+          python scripts/download_dataset.py
 
-    - name: Run tests
-      env:
-        PYTHONPATH: ${{ github.workspace }}
-      run: |
-        pytest -q
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          pytest -q
 
   docker-build:
     runs-on: ubuntu-latest
