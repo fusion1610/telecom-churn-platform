@@ -1,19 +1,28 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
+
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+
 from src.api.routes.prediction import router as prediction_router
 from src.service.prediction_service import ChurnPredictionService
 
+
 FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Model loading is a required startup dependency.
+    # If loading fails, startup must fail rather than
+    # leaving the application with a None prediction service.
     app.state.prediction_service = ChurnPredictionService()
-    yield
-    app.state.prediction_service = None
+
+    try:
+        yield
+    finally:
+        app.state.prediction_service = None
 
 
 app = FastAPI(
@@ -28,15 +37,10 @@ app = FastAPI(
 
 
 @app.exception_handler(Exception)
-async def unhandled_exception_handler(
-    request: Request,
-    exc: Exception,
-):
+async def unhandled_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
-        content={
-            "detail": "Prediction service unavailable.",
-        },
+        content={"detail": "Prediction service unavailable."},
     )
 
 
@@ -47,9 +51,6 @@ def health():
 
 app.include_router(prediction_router)
 
-# ---------------------------------------------------------------------------
-# Frontend
-# ---------------------------------------------------------------------------
 
 app.mount(
     "/static",

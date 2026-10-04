@@ -31,9 +31,15 @@ jobs:
         run: |
           python scripts/download_dataset.py
 
+      - name: Create CI test model
+        run: |
+          python scripts/create_ci_test_model.py
+
       - name: Run tests
         env:
           PYTHONPATH: ${{ github.workspace }}
+          MODEL_URI: ${{ github.workspace }}/.ci/test_model
+          MODEL_THRESHOLD: "0.07"
         run: |
           pytest -q
 
