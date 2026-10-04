@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <meta
+    name="description"
+    content="B2B telecom customer churn and revenue risk assessment platform."
+  >
+  <title>Telecom Retention Intelligence</title>
+
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div>
+          <p class="brand-name">Telecom Retention Intelligence</p>
+          <p class="brand-subtitle">B2B Customer Churn &amp; Revenue Risk</p>
+        </div>
+      </div>
+
+      <div class="system-status" aria-label="System status">
+        <div class="status-item">
+          <span
+            id="api-status-dot"
+            class="status-dot status-dot--checking"
+            aria-hidden="true"
+          ></span>
+
+          <span id="api-status-text">Checking API...</span>
+        </div>
+
+        <div class="status-divider" aria-hidden="true"></div>
+
+        <div class="status-item">
+          <span
+            class="status-dot status-dot--online"
+            aria-hidden="true"
+          ></span>
+
+          <span>Model Online</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="main-content">
+      <section class="page-header" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Customer intelligence</p>
+
+          <h1 id="page-title">Customer Risk Assessment</h1>
+
+          <p class="page-description">
+            Predict churn risk and prioritize retention actions using the
+            production ML model.
+          </p>
+        </div>
+
+        <div class="model-badge" aria-label="Model operating threshold">
+          <span class="model-badge__label">Operating threshold</span>
+          <strong>7%</strong>
+        </div>
+      </section>
+
+      <div
+        id="api-warning"
+        class="alert alert--warning"
+        role="alert"
+        hidden
+      >
+        <span class="alert__icon" aria-hidden="true">!</span>
+        <div>
+          <strong>API unavailable</strong>
+          <p>
+            The prediction service cannot currently be reached. You can
+            complete the form, but assessment requests may fail.
+          </p>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <section class="card assessment-card" aria-labelledby="assessment-title">
+          <div class="card-header">
+            <div>
+              <p class="section-kicker">Assessment input</p>
+              <h2 id="assessment-title">Customer Profile</h2>
+            </div>
+
+            <span class="required-note">
+              <span aria-hidden="true">*</span> Required
+            </span>
+          </div>
+
+          <form id="risk-form" novalidate>
+            <fieldset class="form-section">
+              <legend>Customer Profile</legend>
+
+              <div class="form-grid">
+                <div class="field">
+                  <label for="crm-segment">
+                    CRM Value Segment
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <select id="crm-segment" name="CRM_PID_Value_Segment" required>
+                    <option value="">Select segment</option>
+                    <option value="Bronze">Bronze</option>
+                    <option value="Silver">Silver</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Platinum">Platinum</option>
+                    <option value="Iron">Iron</option>
+                    <option value="Lead">Lead</option>
+                    <option value="Missing">Missing</option>
+                  </select>
+
+                  <p
+                    id="crm-segment-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+
+                <div class="field">
+                  <label for="effective-segment">
+                    Effective Segment
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <select
+                    id="effective-segment"
+                    name="EffectiveSegment"
+                    required
+                  >
+                    <option value="">Select segment</option>
+                    <option value="SOHO">SOHO</option>
+                    <option value="VSE">VSE</option>
+                    <option value="SME">SME</option>
+                    <option value="SE">SE</option>
+                    <option value="Other">Other</option>
+                    <option value="Missing">Missing</option>
+                  </select>
+
+                  <p
+                    id="effective-segment-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend>Subscriber Profile</legend>
+
+              <div class="form-grid form-grid--four">
+                <div class="field">
+                  <label for="active-subscribers">
+                    Active Subscribers
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <input
+                    id="active-subscribers"
+                    name="Active_subscribers"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                    required
+                  >
+
+                  <p
+                    id="active-subscribers-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+
+                <div class="field">
+                  <label for="not-active-subscribers">
+                    Not Active Subscribers
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <input
+                    id="not-active-subscribers"
+                    name="Not_Active_subscribers"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                    required
+                  >
+
+                  <p
+                    id="not-active-subscribers-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+
+                <div class="field">
+                  <label for="suspended-subscribers">
+                    Suspended Subscribers
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <input
+                    id="suspended-subscribers"
+                    name="Suspended_subscribers"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                    required
+                  >
+
+                  <p
+                    id="suspended-subscribers-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+
+                <div class="field">
+                  <label for="total-subscribers">
+                    Total Subscribers
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <input
+                    id="total-subscribers"
+                    name="Total_SUBs"
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="1"
+                    required
+                  >
+
+                  <p
+                    id="total-subscribers-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-section">
+              <legend>Revenue Profile</legend>
+
+              <div class="form-grid form-grid--four">
+                <div class="field">
+                  <label for="mobile-revenue">
+                    Average Mobile Revenue
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <div class="input-with-prefix">
+                    <span aria-hidden="true">₹</span>
+                    <input
+                      id="mobile-revenue"
+                      name="AvgMobileRevenue"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      inputmode="decimal"
+                      placeholder="0.00"
+                      required
+                    >
+                  </div>
+
+                  <p
+                    id="mobile-revenue-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+
+                <div class="field">
+                  <label for="fixed-revenue">
+                    Average Fixed Revenue
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <div class="input-with-prefix">
+                    <span aria-hidden="true">₹</span>
+                    <input
+                      id="fixed-revenue"
+                      name="AvgFIXRevenue"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      inputmode="decimal"
+                      placeholder="0.00"
+                      required
+                    >
+                  </div>
+
+                  <p
+                    id="fixed-revenue-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+
+                <div class="field">
+                  <label for="arpu">
+                    ARPU
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <div class="input-with-prefix">
+                    <span aria-hidden="true">₹</span>
+                    <input
+                      id="arpu"
+                      name="ARPU"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      inputmode="decimal"
+                      placeholder="0.00"
+                      required
+                    >
+                  </div>
+
+                  <p
+                    id="arpu-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+
+                <div class="field">
+                  <label for="total-revenue">
+                    Total Revenue
+                    <span class="required-marker" aria-hidden="true">*</span>
+                  </label>
+
+                  <div class="input-with-prefix">
+                    <span aria-hidden="true">₹</span>
+                    <input
+                      id="total-revenue"
+                      name="TotalRevenue"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      inputmode="decimal"
+                      placeholder="0.00"
+                      required
+                    >
+                  </div>
+
+                  <p
+                    id="total-revenue-error"
+                    class="field-error"
+                    role="alert"
+                  ></p>
+                </div>
+              </div>
+            </fieldset>
+
+            <div
+              id="form-error"
+              class="form-error-banner"
+              role="alert"
+              hidden
+            ></div>
+
+            <div class="form-actions">
+              <button
+                id="assess-button"
+                class="button button--primary"
+                type="submit"
+              >
+                <span class="button__label">Assess Customer Risk</span>
+
+                <span
+                  class="button__spinner"
+                  aria-hidden="true"
+                ></span>
+              </button>
+
+              <p class="form-hint">
+                Assessment uses the production prediction endpoint.
+              </p>
+            </div>
+          </form>
+        </section>
+
+        <aside
+          id="results-panel"
+          class="results-panel"
+          aria-labelledby="results-title"
+        >
+          <div id="empty-state" class="card empty-state">
+            <div class="empty-state__icon" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <h2 id="results-title">Customer Risk Assessment</h2>
+
+            <p>
+              Enter customer information to assess churn risk.
+            </p>
+
+            <div class="empty-state__hint">
+              <span aria-hidden="true">→</span>
+              <span>
+                Results will include risk, revenue exposure, priority,
+                and recommended action.
+              </span>
+            </div>
+          </div>
+
+          <div id="loading-state" class="card loading-state" hidden>
+            <div class="loading-spinner" aria-hidden="true"></div>
+
+            <h2>Assessing customer risk...</h2>
+
+            <p>
+              Sending customer information to the production ML service.
+            </p>
+          </div>
+
+          <div id="prediction-results" hidden>
+            <article class="card risk-card">
+              <div class="risk-card__header">
+                <div>
+                  <p class="section-kicker">Assessment result</p>
+                  <h2 id="result-heading">Customer Risk</h2>
+                </div>
+
+                <span
+                  id="risk-status"
+                  class="risk-status"
+                  data-risk="unknown"
+                >
+                  Pending
+                </span>
+              </div>
+
+              <div class="probability-block">
+                <div class="probability-heading">
+                  <span>Churn Probability</span>
+                  <span
+                    id="probability-value"
+                    class="probability-value"
+                  >0%</span>
+                </div>
+
+                <div
+                  class="probability-track"
+                  role="progressbar"
+                  aria-label="Churn probability"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow="0"
+                >
+                  <div
+                    id="probability-fill"
+                    class="probability-fill"
+                  ></div>
+                </div>
+
+                <div class="probability-scale" aria-hidden="true">
+                  <span>0%</span>
+                  <span>50%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+
+              <div class="risk-summary">
+                <div class="risk-summary__item">
+                  <span class="metric-label">Risk Band</span>
+                  <strong id="risk-band">—</strong>
+                </div>
+
+                <div class="risk-summary__item">
+                  <span class="metric-label">Retention Flag</span>
+                  <strong id="retention-flag">—</strong>
+                </div>
+              </div>
+            </article>
+
+            <section class="metrics-grid" aria-label="Business impact">
+              <article class="card metric-card">
+                <span class="metric-card__icon metric-card__icon--danger">
+                  ₹
+                </span>
+
+                <div>
+                  <p class="metric-label">Revenue at Risk</p>
+                  <strong id="revenue-at-risk">—</strong>
+                </div>
+              </article>
+
+              <article class="card metric-card">
+                <span class="metric-card__icon metric-card__icon--primary">
+                  P
+                </span>
+
+                <div>
+                  <p class="metric-label">Priority</p>
+                  <strong id="priority-tier">—</strong>
+                </div>
+              </article>
+
+              <article class="card metric-card">
+                <span class="metric-card__icon metric-card__icon--warning">
+                  !
+                </span>
+
+                <div>
+                  <p class="metric-label">Retention Urgency</p>
+                  <strong id="retention-urgency">—</strong>
+                </div>
+              </article>
+            </section>
+
+            <section class="card recommendation-card">
+              <div class="recommendation-card__icon" aria-hidden="true">
+                →
+              </div>
+
+              <div>
+                <p class="section-kicker">Recommended action</p>
+                <h3>Retention Action</h3>
+
+                <p
+                  id="retention-action"
+                  class="recommendation-text"
+                >
+                  —
+                </p>
+              </div>
+            </section>
+
+            <section class="card interpretation-card">
+              <div class="card-header card-header--compact">
+                <div>
+                  <p class="section-kicker">Decision support</p>
+                  <h3>How to interpret this result</h3>
+                </div>
+              </div>
+
+              <ul class="interpretation-list">
+                <li>
+                  <span aria-hidden="true">01</span>
+                  <p>
+                    <strong>Churn probability</strong> is the model's
+                    estimated probability that the customer will churn.
+                  </p>
+                </li>
+
+                <li>
+                  <span aria-hidden="true">02</span>
+                  <p>
+                    <strong>Risk band</strong> indicates the operational
+                    risk category returned by the model service.
+                  </p>
+                </li>
+
+                <li>
+                  <span aria-hidden="true">03</span>
+                  <p>
+                    <strong>Revenue at Risk</strong> represents estimated
+                    revenue exposure associated with the prediction.
+                  </p>
+                </li>
+
+                <li>
+                  <span aria-hidden="true">04</span>
+                  <p>
+                    <strong>Retention Action</strong> is the recommended
+                    operational response supplied by the API.
+                  </p>
+                </li>
+              </ul>
+
+              <div class="disclaimer">
+                Predictions are decision-support signals and should be
+                reviewed alongside customer context.
+              </div>
+            </section>
+          </div>
+
+          <div
+            id="result-error"
+            class="card result-error"
+            role="alert"
+            hidden
+          >
+            <div class="result-error__icon" aria-hidden="true">!</div>
+
+            <div>
+              <h2>Assessment unavailable</h2>
+
+              <p>
+                Unable to assess customer risk. Please try again.
+              </p>
+
+              <button
+                id="retry-button"
+                class="button button--secondary"
+                type="button"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <span>Telecom Retention Intelligence</span>
+      <span aria-hidden="true">•</span>
+      <span>Decision-support platform</span>
+    </footer>
+  </div>
+
+  <div
+    id="live-region"
+    class="sr-only"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
+
+  <script src="/static/js/app.js" defer></script>
+</body>
+</html>

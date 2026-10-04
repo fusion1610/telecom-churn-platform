@@ -10,8 +10,18 @@ from src.business.risk import (
 )
 
 
-DEFAULT_MODEL_URI = "models:/telecom-churn-hgb@production"
+import os
+
+DEFAULT_MODEL_URI = os.getenv(
+    "MODEL_URI",
+    "models:/telecom-churn-hgb@production",
+)
 DEFAULT_THRESHOLD = 0.07
+
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
+
+if MLFLOW_TRACKING_URI:
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 MODEL_FEATURES = [
     "CRM_PID_Value_Segment",

@@ -1,11 +1,13 @@
 from contextlib import asynccontextmanager
-
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse
 from src.api.routes.prediction import router as prediction_router
 from src.service.prediction_service import ChurnPredictionService
 
+FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,3 +46,18 @@ def health():
 
 
 app.include_router(prediction_router)
+
+# ---------------------------------------------------------------------------
+# Frontend
+# ---------------------------------------------------------------------------
+
+app.mount(
+    "/static",
+    StaticFiles(directory=FRONTEND_DIR),
+    name="static",
+)
+
+
+@app.get("/", include_in_schema=False)
+def frontend():
+    return FileResponse(FRONTEND_DIR / "index.html")
